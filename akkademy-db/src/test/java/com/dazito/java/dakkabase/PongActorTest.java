@@ -41,4 +41,52 @@ public class PongActorTest {
 
         javaFuture.get(1000, TimeUnit.MILLISECONDS);
     }
+
+    @Test
+    public void printToConsole() throws Exception {
+        askPong("Ping").thenAccept(s -> System.out.println("printToConsole - Replied with: " + s));
+        Thread.sleep(100);
+    }
+
+    @Test
+    public void shouldCauseFailure() {
+        askPong("causeError").handle((x, throwable) -> {
+            if(throwable != null) {
+                System.out.println("shouldCauseFailure - Error: " + throwable);
+            }
+            return null;
+        });
+    }
+
+    @Test
+    public void shouldCauseFailureAndRecover() {
+        System.out.println("shouldCauseFailureAndRecover");
+        CompletionStage<String> completionStage = askPong("causeError").exceptionally(throwable -> {
+            return "default"; // In case of error, return "default"
+        });
+    }
+
+    @Test
+    public void recoverFromFailureAsync() {
+        askPong("causeError")
+                .handle((result, exception) -> {
+                    if (exception == null) return CompletableFuture.completedFuture(result);
+                    else return askPong("Ping");
+                }).thenCompose(x -> x);
+    }
+
+    @Test
+    public void composingFutures() {
+        // Compose futures and check for errors at the end of the pipeline
+        askPong("ping").thenCompose(x -> askPong("ping" + x)).handle((message, throwable) -> {
+           if(throwable != null) return "default";
+           else return message;
+        });
+    }
+
+    public CompletionStage<String> askPong(String message) {
+        Future scalaFuture = ask(actorRef, message, 1000);
+        CompletionStage<String> completionStage = toJava(scalaFuture);
+        return completionStage;
+    }
 }
