@@ -78,10 +78,18 @@ public class PongActorTest {
     @Test
     public void composingFutures() {
         // Compose futures and check for errors at the end of the pipeline
-        askPong("ping").thenCompose(x -> askPong("ping" + x)).handle((message, throwable) -> {
-           if(throwable != null) return "default";
-           else return message;
-        });
+        askPong("ping")
+                .thenCompose(x -> askPong("ping" + x))
+                .handle((message, throwable) -> {
+                    if(throwable != null) return "default";
+                    else return message;
+                });
+    }
+
+    @Test
+    public void combiningFutures() {
+        askPong("ping")
+                .thenCombine(askPong("ping"), (s, s2) -> s + s2); // "PongPong"
     }
 
     public CompletionStage<String> askPong(String message) {
