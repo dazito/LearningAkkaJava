@@ -1,9 +1,11 @@
 package com.dazito.java.dakkabase.messages;
 
+import java.io.Serializable;
+
 /**
  * Created by daz on 20/02/2016.
  */
-public class SetRequest {
+public class SetRequest implements Serializable {
     private final String key;
     private final Object value;
 
