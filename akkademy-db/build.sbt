@@ -12,3 +12,8 @@ libraryDependencies ++= Seq(
     "com.typesafe.akka"      %% "akka-remote" % "2.4.2",
     "org.scala-lang.modules" %% "scala-java8-compat" % "0.6.0"
 )
+
+mappings in (Compile, packageBin) ~= { _.filterNot({
+    case (_, name) => Seq("application.conf").contains(name)
+})
+}
