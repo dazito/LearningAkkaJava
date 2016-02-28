@@ -5,10 +5,7 @@ import akka.actor.Status;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import akka.japi.pf.ReceiveBuilder;
-import com.dazito.java.dakkabase.messages.GetRequest;
-import com.dazito.java.dakkabase.messages.KeyNotFoundException;
-import com.dazito.java.dakkabase.messages.SetRequest;
-import com.dazito.java.dakkabase.messages.UnknownMessageException;
+import com.dazito.java.dakkabase.messages.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +39,17 @@ public class DakkabaseDb extends AbstractActor {
 
                     // Reply back with the value
                     sender().tell(response, self());
+                })
+                .match(SetIfNotExists.class, message -> {
+                    log.info("Received Set If Not Exists - key:{} | value: {}");
+                    if (!map.containsKey(message.getKey())) {
+                        map.put(message.getKey(), message.getValue());
+                    }
+                    sender().tell(new Status.Success(message.getKey()), self());
+                })
+                .match(DeleteMessage.class, message -> {
+                    map.remove(message.getKey());
+                    sender().tell(new Status.Success(message.getKey()), self());
                 })
                 .matchAny(o -> {
                     log.info("Received unknown message {}", o);

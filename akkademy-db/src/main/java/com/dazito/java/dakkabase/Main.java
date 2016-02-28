@@ -1,5 +1,6 @@
 package com.dazito.java.dakkabase;
 
+import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 
@@ -10,6 +11,8 @@ public class Main {
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create("dakkabase-java");
-        system.actorOf(Props.create(DakkabaseDb.class), "dakkabase-db");
+        ActorRef actorRef = system.actorOf(Props.create(DakkabaseDb.class), "dakkabase-db");
+
+        System.out.println("Path:" + actorRef.path().name() + " | System:" + actorRef.path().root() + " | Path: " + actorRef.path().toString());
     }
 }
