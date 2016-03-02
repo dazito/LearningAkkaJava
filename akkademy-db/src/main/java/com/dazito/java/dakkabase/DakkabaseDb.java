@@ -1,14 +1,23 @@
 package com.dazito.java.dakkabase;
 
 import akka.actor.AbstractActor;
+import akka.actor.OneForOneStrategy;
 import akka.actor.Status;
+import akka.actor.SupervisorStrategy;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import akka.japi.pf.DeciderBuilder;
 import akka.japi.pf.ReceiveBuilder;
+import com.dazito.java.dakkabase.exceptions.BrokenPlateException;
+import com.dazito.java.dakkabase.exceptions.DrunkenFoolException;
+import com.dazito.java.dakkabase.exceptions.RestauranteFireError;
+import com.dazito.java.dakkabase.exceptions.TiredChefException;
 import com.dazito.java.dakkabase.messages.*;
+import scala.concurrent.duration.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by daz on 20/02/2016.
@@ -58,5 +67,18 @@ public class DakkabaseDb extends AbstractActor {
                     sender().tell(new Status.Failure(new UnknownMessageException()), self());
                 })
                 .build());
+    }
+
+    @Override
+    public SupervisorStrategy supervisorStrategy() {
+        return new OneForOneStrategy(5, Duration.create(1, TimeUnit.MINUTES),
+                DeciderBuilder
+                    .match(BrokenPlateException.class, e -> SupervisorStrategy.resume())
+                    .match(DrunkenFoolException.class, e1 -> SupervisorStrategy.restart())
+                    .match(RestauranteFireError.class, e -> SupervisorStrategy.escalate())
+                    .match(TiredChefException.class, e -> SupervisorStrategy.stop())
+                    .matchAny(throwable -> SupervisorStrategy.escalate())
+                .build()
+        );
     }
 }
