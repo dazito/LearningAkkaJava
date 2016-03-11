@@ -60,6 +60,14 @@ public class DakkabaseDb extends AbstractActor {
                     map.remove(message.getKey());
                     sender().tell(new Status.Success(message.getKey()), self());
                 })
+                .match(Connected.class, message -> {
+                    log.info("Received Connected request");
+                    sender().tell(new Connected(), self());
+                })
+                .match(CheckConnected.class, message -> {
+                    log.info("Recived Check Connected request");
+                    sender().tell(new CheckConnected(), self());
+                })
                 .matchAny(o -> {
                     log.info("Received unknown message {}", o);
 
