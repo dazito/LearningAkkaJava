@@ -10,7 +10,9 @@ libraryDependencies ++= Seq(
     "com.typesafe.akka"      %% "akka-actor" % "2.4.2",
     "com.typesafe.akka"      %% "akka-testkit" % "2.4.2",
     "com.typesafe.akka"      %% "akka-remote" % "2.4.2",
-    "org.scala-lang.modules" %% "scala-java8-compat" % "0.7.0"
+    "org.scala-lang.modules" %% "scala-java8-compat" % "0.7.0",
+    "com.jason-goodwin" % "better-monads" % "0.2.1",
+    "com.syncthemall" % "boilerpipe" % "1.2.2"
 )
 
 mappings in (Compile, packageBin) ~= { _.filterNot({

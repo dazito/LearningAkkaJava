@@ -92,7 +92,7 @@ public class DakkabaseDb extends AbstractActor {
                     .match(RestauranteFireError.class, e -> SupervisorStrategy.escalate())
                     .match(TiredChefException.class, e -> SupervisorStrategy.stop())
                     .matchAny(throwable -> SupervisorStrategy.escalate())
-                .build()
+                    .build()
         );
     }
 }
