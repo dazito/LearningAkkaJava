@@ -30,6 +30,9 @@ public class Main {
         // Broadcast a message to all the actors in the pool/group
         // router.tell(new Broadcast("Broadcasting message!"), ActorRef.noSender());
 
+        // Dispatchers
+        ActorRef actorWithDispatcher = system.actorOf(Props.create(DummyActorDispatchersExample.class).withDispatcher("custom-dispatcher"));
+
         System.out.println("Path:" + actorRef.path().name() + " | System:" + actorRef.path().root() + " | Path: " + actorRef.path().toString());
     }
 }
