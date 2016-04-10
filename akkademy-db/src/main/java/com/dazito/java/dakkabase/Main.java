@@ -3,10 +3,14 @@ package com.dazito.java.dakkabase;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import akka.routing.BalancingPool;
 import akka.routing.RoundRobinGroup;
 import akka.routing.RoundRobinPool;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by daz on 25/02/2016.
@@ -34,5 +38,15 @@ public class Main {
         ActorRef actorWithDispatcher = system.actorOf(Props.create(DummyActorDispatchersExample.class).withDispatcher("custom-dispatcher"));
 
         System.out.println("Path:" + actorRef.path().name() + " | System:" + actorRef.path().root() + " | Path: " + actorRef.path().toString());
+
+        List<ActorRef> routees = Arrays.asList(1, 2, 3, 4, 5)
+                .stream()
+                .map(x -> system.actorOf(Props.create(ArticleParser.class).withDispatcher("article-parsing-dispatcher")))
+                .collect(Collectors.toList());
+        Iterable<String> routeeAddresses = routees.stream().map(x -> x.path().toStringWithoutAddress()).collect(Collectors.toList());
+        ActorRef workerRouterWithDispatcher = system.actorOf(new RoundRobinGroup(routeeAddresses).props());
+
+        // Balancing Pool with a custom dispatcher
+        ActorRef workerRouterBalancingPool = system.actorOf(new BalancingPool(8).props(Props.create(ArticleParser.class)), "balancing-pool-dispatcher");
     }
 }
