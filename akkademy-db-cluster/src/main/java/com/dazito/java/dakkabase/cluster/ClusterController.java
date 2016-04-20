@@ -28,8 +28,8 @@ public class ClusterController extends AbstractActor {
 
     public ClusterController() {
         receive(ReceiveBuilder
-                .match(ClusterEvent.MemberEvent.class, message -> log.info("\n\n******************** MemberEvent: {} *********************\n\n", message))
-                .match(ClusterEvent.UnreachableMember.class, message -> log.info("\n\n******************* UnreachableMember: {} *******************\n\n", message))
+                .match(ClusterEvent.MemberEvent.class, message -> log.info("******************** MemberEvent: {} *********************", message))
+                .match(ClusterEvent.UnreachableMember.class, message -> log.info("******************* UnreachableMember: {} *******************", message))
                 .build());
     }
 }

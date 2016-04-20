@@ -1,6 +1,7 @@
 package com.dazito.java.dakkabase;
 
 import akka.actor.AbstractActor;
+import akka.actor.Status;
 import akka.japi.pf.ReceiveBuilder;
 import com.dazito.java.dakkabase.messages.ParseArticle;
 
@@ -11,7 +12,11 @@ public class ArticleParserActor extends AbstractActor {
 
     private ArticleParserActor() {
         receive(ReceiveBuilder
-                .match(ParseArticle.class, msg -> sender().tell(ArticleParser.apply(msg.getHtmlBody()), self()))
+                .match(ParseArticle.class, msg -> {
+                    ArticleParser.apply(msg.getHtmlBody())
+                            .onSuccess(body -> sender().tell(body, self()))
+                            .onFailure(t -> sender().tell(new Status.Failure(t), self()));
+                })
                 .build());
     }
 }
