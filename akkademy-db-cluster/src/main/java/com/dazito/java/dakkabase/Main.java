@@ -12,7 +12,7 @@ import com.dazito.java.dakkabase.cluster.ClusterController;
  */
 public class Main {
 
-    public static <T <: akka.actor.Extension> <T <: akka.actor.Extension> void main(String[] args) {
+    public static void main(String[] args) {
 //        if(args.length == 0) {
 //            ConfigFactory.parseString("akka.remote.netty.tcp.port=0");
 //        }
